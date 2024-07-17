@@ -1,0 +1,136 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %} Gestor de tickets {% endblock %}
+
+{% block extra_styles %}
+    
+{% endblock %}
+
+{% block content %}
+
+		<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+			<ul class="breadcrumb">
+				<li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+				<li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tickets' %}"><span class="badge bg-secondary rounded-pill">Gestor tickets</span></a></li>
+			</ul>
+		</nav>
+
+    <h3 class="text-center lead"> Panel de gestor de tickets <i class="fas fa-ticket-alt"></i></h3>
+
+    <div class="d-flex align-items-center justify-content-center py-5" style="gap: 0.9rem;" >
+        <div class="p-4 border">
+            <h3 class="lead"> Total de tickets: {{all_tickets_created}}</h3>
+        </div>
+        <div class="p-4 border">
+            <h2 class="lead">Tickets cerrados: {{closed_tickets}}</h2>
+        </div>
+        <div class="p-4 border">
+            <h2 class="lead">Tickets abiertos: {{open_tickets}}</h2>
+        </div>
+        <div class="p-4 border">
+            <h2 class="lead">Tickets pendientes: {{open_tickets}}</h2>
+        </div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{% url 'generate_ticket' %}"><i class="fas fa-plus"></i> Crear un nuevo ticket</a>
+		<div class="table-responsive py-5">
+			<table id="example" class="table table-light">
+        <thead>
+            <tr>
+                <th>Asunto</th>
+                <th>Cliente</th>
+                <th>Asignado a</th>
+                <th>Agente</th>
+                <th>Descripción</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Tipo</th>
+                <th>Canal</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+            <tbody>
+							{% for ticket in tickets %}
+                <tr>
+									<td>{{ticket.subject}}</td>
+									<td>{{ticket.customer}}</td>
+									<td>{{ticket.asigned_to}}</td>
+									<td>{{ticket.agent}}</td>
+									<td>{{ticket.description}}</td>
+									{% if ticket.priority == "Normal" %}
+											<td><span class="badge rounded-pill bg-success">{{ticket.priority}}</span></td>
+									{% elif ticket.priority == "Mediana" %}
+											<td><span class="badge rounded-pill bg-warning">{{ticket.priority}}</span></td>
+									{% elif ticket.priority == "Alta" %}
+											<td><span class="badge rounded-pill bg-danger">{{ticket.priority}}</span></td>
+									{% endif %}
+									{% if ticket.status == "Abierto" %}
+										<td><span class="badge rounded-pill bg-danger">{{ticket.status}}</span></td>
+									{% elif ticket.status == "Cerrado" %}
+										<td><span class="badge rounded-pill bg-success">{{ticket.status}}</span></td>
+									{% endif %}
+									<td>{{ticket.ticket_type}}</td>
+									<td>{{ticket.chanel}}</td>
+									<td>{{ticket.created_at}}</td>
+									<div class="modal fade" id="deleteTicket{{ ticket.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteTicket" aria-hidden="true">
+										<div class="modal-dialog">
+												<div class="modal-content">
+														<div class="modal-header">
+																<h5 class="modal-title" id="deleteTicket">Eliminar ticket <i class="far fa-trash-alt"></i></h5>
+																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+														</div>
+														<div class="modal-body">
+																<h3 class="lead">¿Seguro que deseas eliminar este ticket: <b>'{{ticket.subject}}'</b>? </h3>
+														</div>
+														<div class="modal-footer">
+																<form action="{% url 'delete_ticket' ticket.id %}" method="POST">
+																		{% csrf_token %}
+																		<button type="submit" class="btn btn-outline-danger" data-bs-target="#deleteTicket{{ ticket.id }}" data-bs-toggle="modal">Eliminar ticket</button>
+																</form>        
+																<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+														</div>
+												</div>
+										</div>
+									<td><li class="dropdown list-unstyled">
+										<a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<i class="fas fa-bars justify-content-center"></i>
+										</a>
+										<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown-menu">
+											<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#closeTicket{{ ticket.id }}"> <i class="far fa-check-square"></i> Cerrar Ticket</a></li>
+											<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#deleteTicket{{ ticket.id }}"> <i class="far fa-trash-alt"></i> Eliminar Ticket</a></li>
+										</ul>
+								</li>
+								<div class="modal fade" id="closeTicket{{ ticket.id }}" tabindex="-1" role="dialog" aria-labelledby="closeTicket" aria-hidden="true">
+									<div class="modal-dialog">
+											<div class="modal-content">
+													<div class="modal-header">
+															<h5 class="modal-title" id="DoneTask">Cerrar ticket <i class="fas fa-ticket-alt"></i></h5>
+															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+													</div>
+													<div class="modal-body">
+															<h3 class="lead">¿Seguro que deseas cerrar este ticket: <b>'{{ticket.subject}}'</b>? </h3>
+													</div>
+													<div class="modal-footer">
+															<form action="{% url 'close_ticket' ticket.id %}" method="POST">
+																	{% csrf_token %}
+																	<button type="submit" class="btn btn-outline-danger" data-bs-target="#closeTicket{{ ticket.id }}" data-bs-toggle="modal">Cerrar ticket</button>
+															</form>        
+															<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+													</div>
+											</div>
+								</div>
+							</td>
+                </tr>
+							{% endfor %}
+            </tbody>
+      </table>
+		</div>
+		<script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    {% block child_js_below_files %} 
+			<script src="{% static 'js/table.js' %}"></script>
+			<script src="{% static 'js/dataTables.js' %}"></script>
+			<script src="{% static 'js/dataTables.bootstrap5.js' %}"></script>
+			<script src="{% static 'js/hide_message.js' %}"></script>
+    {% endblock %}
+
+{% endblock %}

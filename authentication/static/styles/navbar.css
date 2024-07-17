@@ -1,0 +1,88 @@
+@font-face {
+  font-family: "navBarFontFamily";
+  src: url("/HollowClientsSystem/static/fonts/Cerebri_Sans_ExtraBold.ttf")format("ttf");
+}
+
+@font-face {
+  font-family: "brandFont";
+  src: url("/HollowClientsSystem/static/fonts/SHRIMP.ttf")format("ttf");
+}
+
+
+.navbar {
+  font-size: large;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+
+.navbar {
+  background-color: #5c5470;
+
+}
+
+
+.navbar-brand img {
+  margin-left: 7px;
+}
+
+
+body {
+  background-color: #fcfcfc;
+}
+
+
+.nav-item .nav-link li {
+  justify-content: center;
+}
+
+
+.nav-link {
+  color:#fcfcfc;
+}
+
+
+.far {
+  color: #fcfcfc;
+}
+
+
+.navbar-brand{
+  color:#fcfcfc;
+  font-family: "brandFont";
+}
+
+
+.nav-link:hover {
+  color: #dbd8e3;
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+
+.navbar .nav-item .nav-link {
+  margin-right: 35px;
+}
+
+
+.far .nav-item .nav-link .dropdown-menu {
+  justify-content: end;
+}
+
+
+.card-text {
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: justify;
+}
+
+
+.card .img-fluid:hover {
+  color: #dbd8e3;
+  opacity: 0.5;
+  cursor: pointer;
+
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+}

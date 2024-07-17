@@ -1,0 +1,16 @@
+body {
+    background-color: #f9fcff;
+}
+
+
+.card {
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 5px 5px 5px 5px #393e46;
+}
+
+
+.alert {
+    display:inline-block;
+   
+ }

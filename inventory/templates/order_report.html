@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+</head>
+<body>
+			<div style="font-size: larger;">
+				{% for order in orders %}
+						Empresa: <b>Hollow Customers System</b>
+						<br>
+						Fecha y hora: <b>{{date}}</b>
+						<br>
+						Nombre del cliente: <b>{{order.customer}}</b> 
+						<br>
+						# de pedido: <b>{{order.id}}</b>
+						<br>
+						Dirección: <b>{{order.adress}}</b>
+						<br>
+						Pais: <b>COL</b>
+						<br>
+						Correo: <b>N/A</b>
+				{% endfor %}
+			</div>  
+
+				<br>
+				<br>
+				<br>
+					<table>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Cliente</th>
+								<th>Producto</th>
+								<th>Dirección</th>
+								<th>Teléfono</th>
+								<th>Precio total</th>
+								<th>Fecha</th>
+								<th>Empleado</th>
+							</tr>
+						</thead>
+							<tbody>
+								{% for order in orders %}
+									<tr>
+										<td>{{order.id}}</td>
+										<td>{{order.customer}}</td>
+										<td>{{order.product}}</td>
+										<td>{{order.adress}}</td>
+										<td>{{order.phone}}</td>
+										<td>{{order.total_price}}</td>
+										<td>{{order.created_at}}</td>
+										<td>{{request.user}}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+					</table>
+				</div>
+				<hr>
+				<br>
+				<br>
+				<h3 style="font-size: larger;">¡Gracias por su compra!</h3>
+	</body>
+</html>

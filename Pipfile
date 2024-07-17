@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+fontawesome-free = "==5.15.4"
+pymysql = "*"
+cryptography = "*"
+django-jazzmin = "*"
+weasyprint = "*"
+xhtml2pdf = "*"
+
+[dev-packages]
+
+[scripts]
+server = "python manage.py runserver 127.0.0.1:8000"
+make = "python manage.py makemigrations"
+migrate = "python manage.py migrate"
+test-authentication = "python manage.py test authentication -v 2"
+test-tasks = "python manage.py test tasks -v 2"
+test-menu = "python manage.py test menu -v 2"
+test-sales_management = "python manage.py test sales_management -v 2"
+
+[requires]
+python_version = "3.8"

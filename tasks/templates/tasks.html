@@ -1,0 +1,229 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %} Tareas {% endblock %}
+
+{% block extra_styles %}
+    <script src="{% static 'js/customizeDataTable.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+		<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+			<ul class="breadcrumb">
+				<li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+				<li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tasks' %}"><span class="badge bg-secondary rounded-pill">Gestionar tareas</span></a></li>
+			</ul>
+		</nav>
+
+    <h3 class="text-center lead"> Gestionar tareas <i class="fas fa-tasks"></i></h3>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show mt-4 text-center" role="alert" style="width: 350px;">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{message}}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="text-end justify-conten-end">
+        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Agregar tarea <i class="far fa-plus-square"></i> 
+        </button>
+    </div>
+		<div class="justify-content-center py-4">
+			<a class="text-decoration-none text-white btn btn-success btn-sm" href="{% url 'tasks' %}">Refrescar <i class="fas fa-sync-alt"></i></a> 
+		</div>
+
+    <div class="modal fade justify-content-center" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 class="lead">Agregar tarea nueva <i class="fas fa-plus-circle"></i></h3>
+                    <form action="{% url 'add' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-sm mb-2" name="taskName" type="text" id="taskName">
+                            <label class="form-label" for="taskName">Nombre de la tarea</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-sm mb-2" name="taskDescription" type="text" id="taskDescription">
+                            <label class="form-label" for="taskDescription">Descripción</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <select class="form-select" aria-label="Default select example" name="taskPriority" id="priority">
+                                <option selected></option>
+                                <option value="Normal">Normal</option>
+                                <option value="Mediana">Mediana</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                            <label for="priority" class="form-label">Prioridad de la tarea</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="taskStatus" type="text" id="taskStatus">
+                            <label class="form-label" for="taskStatus">Estado</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="dueDate" type="date" id="dueDate">
+                            <label class="form-label" for="dueDate">Fecha limite</label>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary">Agregar tarea</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="example" class="table table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Creación</th>
+                    <th>Fecha limite</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td><i class="far fa-check-circle"></i></td>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.description }}</td>
+                        {% if task.priority == "Normal" %}
+                           <td><span class="badge rounded-pill bg-success">{{ task.priority }}</span></td>
+                        {% elif task.priority == "Alta" %}
+                            <td><span class="badge rounded-pill bg-danger">{{ task.priority }}</span></td>
+                        {% elif task.priority == "Mediana" %}
+                            <td><span class="badge rounded-pill bg-warning">{{ task.priority }}</span></td>
+                        {% endif %}
+						
+                        {% if task.status == "Finalizada" %}
+                            <td><span class="badge rounded-pill bg-danger">{{ task.status }}</span></td>
+                        {% else %}
+                            <td><span class="badge rounded-pill bg-info">{{ task.status }}</span></td>
+                        {% endif %}
+                        <td>{{ task.created_at }}</td>
+                        <td>{{ task.due_date }}</td>
+												<div class="modal fade" id="TaskDelete{{ task.id }}" tabindex="-1" role="dialog" aria-labelledby="TaskDelete" aria-hidden="true">
+													<div class="modal-dialog">
+															<div class="modal-content">
+																	<div class="modal-header">
+																			<h5 class="modal-title" id="taskDelete">Eliminar tarea <i class="fas fa-backspace"></i></h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																	</div>
+																	<div class="modal-body">
+																			<h3 class="lead">¿Seguro que deseas eliminar esta tarea: <b>'{{task.title}}'</b>? </h3>
+																	</div>
+																	<div class="modal-footer">
+																			<form action="{% url 'delete' task.id %}" method="POST">
+																					{% csrf_token %}
+																					<button type="submit" class="btn btn-outline-danger" data-bs-target="#TaskDelete{{ task.id }}" data-bs-toggle="modal">Eliminar</button>
+																			</form>        
+																			<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+																	</div>
+															</div>
+												</div>
+
+                        <td>
+                            <li class="dropdown list-unstyled">
+                                <a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+																	<i class="fas fa-bars justify-content-center"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown-menu">
+																	<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#DoneTask{{ task.id }}"> <i class="far fa-check-square"></i> Finalizar tarea</a></li>
+                                    <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#TaskUpdate{{ task.id }}"><i class="far fa-edit"></i> Actualizar</a></li>
+                                    <li><a class="dropdown-item" href="{% url "delete" task.id %}" data-bs-toggle="modal" data-bs-target="#TaskDelete{{ task.id }}"><i class="fas fa-trash-alt"></i> Eliminar</a></li>
+                                </ul>
+                            </li>
+
+                            <div class="modal fade justify-content-center" id="TaskUpdate{{ task.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <h3 class="lead">Actualizar tarea:  <b>'{{ task.title }}'</b> <i class="far fa-edit"></i></h3>
+                                            <form action="{% url 'update' task.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <div class="form-floating py-3">
+                                                    <input class="form-control form-control-sm mb-2" name="taskName" type="text" id="taskName">
+                                                    <label class="form-label" for="taskName">Nombre de la tarea</label>
+                                                </div>
+                                                <div class="form-floating py-3">
+                                                    <input class="form-control form-control-sm mb-2" name="taskDescription" type="text" id="taskDescription">
+                                                    <label class="form-label" for="taskDescription">Descripción</label>
+                                                </div>
+                                                <div class="form-floating py-3">
+                                                    <select class="form-select" aria-label="Default select example" name="taskPriority" id="priority">
+                                                        <option selected></option>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Mediana">Mediana</option>
+                                                        <option value="Alta">Alta</option>
+                                                    </select>
+                                                    <label for="priority" class="form-label">Prioridad de la tarea</label>
+                                                </div>
+                                                <div class="form-floating py-3">
+                                                    <input class="form-control form-control-lg mb-2" name="taskStatus" type="text" id="taskStatus">
+                                                    <label class="form-label" for="taskStatus">Estado</label>
+                                                </div>
+                                                <div class="form-floating py-3">
+                                                    <input class="form-control form-control-lg mb-2" name="dueDate" type="date" id="dueDate">
+                                                    <label class="form-label" for="dueDate">Fecha limite</label>
+                                                </div>
+                                                <button type="submit" class="btn btn-outline-primary">Actualizar tarea</button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+																											
+													<div class="modal fade" id="DoneTask{{ task.id }}" tabindex="-1" role="dialog" aria-labelledby="DoneTask" aria-hidden="true">
+														<div class="modal-dialog">
+																<div class="modal-content">
+																		<div class="modal-header">
+																				<h5 class="modal-title" id="DoneTask">Finalizar tarea <i class="fas fa-check"></i></h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																		</div>
+																		<div class="modal-body">
+																				<h3 class="lead">¿Seguro que deseas finalizar esta tarea: <b>'{{task.title}}'</b>? </h3>
+																		</div>
+																		<div class="modal-footer">
+																				<form action="{% url 'is_finished' task.id %}" method="POST">
+																						{% csrf_token %}
+																						<button type="submit" class="btn btn-outline-danger" data-bs-target="#DoneTask{{ task.id }}" data-bs-toggle="modal">Finalizar</button>
+																				</form>        
+																				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+																		</div>
+																</div>
+														</div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+		<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+		{% block child_js_below_files %}
+			<script>
+				$('#myModal').on('shown.bs.modal', function () {
+						$('#myInput').trigger('focus')
+				})
+				</script>
+				<script src="{% static 'js/table.js' %}"></script>
+				<script src="{% static 'js/dataTables.js' %}"></script>
+				<script src="{% static 'js/dataTables.bootstrap5.js' %}"></script>
+				<script src="{% static 'js/hide_message.js' %}"></script>
+	
+		{% endblock %}
+	
+
+{% endblock %}

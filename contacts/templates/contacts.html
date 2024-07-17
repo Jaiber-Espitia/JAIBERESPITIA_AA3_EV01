@@ -1,0 +1,283 @@
+{% extends "dashboard.html" %}
+{% load static %}
+<title>{% block title %}Clientes{% endblock %}</title>
+
+{% block content %}
+
+		<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+			<ul class="breadcrumb">
+				<li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+				<li class="breadcrumb-item active" aria-current="page"><a href="{% url 'contacts' %}"><span class="badge bg-secondary rounded-pill">Gestionar clientes</span></a></li>
+			</ul>
+		</nav>
+
+    <h3 class="text-center lead">Gestionar clientes y campañas de marketing <i class="fas fa-users"></i></h3>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show mt-3 text-center" role="alert" style="width: 350px;">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+								{{message}}
+            </div>
+        {% endfor %}
+    {% endif %}
+	
+
+    <div class="text-end justify-content-end">
+        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addContact">Crear un contacto <i class="fas fa-address-book"></i></button>
+    </div>
+
+    <div class="justify-content-center py-3">
+        <a class="text-decoration-none text-white btn btn-success btn-sm" href="{% url 'contacts' %}">Refrescar <i class="fas fa-sync-alt"></i></a>
+    </div>
+
+    <div class="modal fade justify-content-center" id="addContact" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3 class="lead">Agregar un nuevo cliente <i class="fas fa-address-book"></i></h3>
+                    <form action="{% url 'add_contact' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-sm mb-2" name="customer" type="text" id="customer" maxlength="20" required aria-required="Por favor ingrese el nombre del cliente.">
+                            <label class="form-label" for="customer">Nombre del cliente</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-sm mb-2" name="address" type="text" id="address" maxlength="40">
+                            <label class="form-label" for="address">Dirección</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-sm mb-2" name="position" type="text" id="position" maxlength="20">
+                            <label class="form-label" for="position">Cargo</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="interaction" type="text" id="interaction" maxlength="20">
+                            <label class="form-label" for="interaction">Interacción</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="preference" type="text" id="preference" maxlength="25">
+                            <label class="form-label" for="preference">Preferencia</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="notes" type="text" id="notes" maxlength="150">
+                            <label class="form-label" for="notes">Notas</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="campaing" type="text" id="campaing" readonly value="Sin campaña">
+                            <label class="form-label" for="campaing">Campaña</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="email" type="email" id="email">
+                            <label class="form-label" for="email">Email</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <input class="form-control form-control-lg mb-2" name="phoneNumber" type="text" id="phoneNumber" maxlength="14">
+                            <label class="form-label" for="phoneNumber">Teléfono</label>
+                        </div>
+                        <div class="form-floating py-3">
+                            <select class="form-select" name="status" id="status">
+																<option selected></option>
+																<option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                            <label for="status" class="form-label">Estado</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-primary">Agregar Cliente</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive justify-content-center">
+        <table id="example" class="table table-hover table-bordered" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Dirección</th>
+                    <th scope="col">Cargo</th>
+                    <th scope="col">Interacción</th>
+                    <th scope="col">Preferencia</th>
+                    <th scope="col">Notas</th>
+                    <th scope="col">Campaña</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr class="text-justify">
+                        <td>{{ customer.customer }}</td>
+                        <td>{{ customer.address }}</td>
+                        <td>{{ customer.position }}</td>
+                        <td>{{ customer.interaction }}</td>
+                        <td>{{ customer.preference }}</td>
+                        <td>{{ customer.notes }}</td>
+												{% if customer.campaing == "Sin campaña" %}
+                        	<td><span class="badge rounded-pill bg-danger">{{ customer.campaing }}</span></td>
+												{% elif customer.campaing == "Campaña agregada" %}
+													<td><span class="badge rounded-pill bg-success">{{ customer.campaing }}</span></td>
+												{% endif %}
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone_number }}</td>
+												{% if customer.status == "Activo" %}
+                        	<td><span class="badge rounded-pill bg-success">{{ customer.status }}</span></td>
+												{% endif %}
+												<div class="modal fade" id="deleteContact{{ customer.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteContact" aria-hidden="true">
+													<div class="modal-dialog">
+															<div class="modal-content">
+																	<div class="modal-header">
+																			<h5 class="modal-title" id="taskDelete">Eliminar cliente <i class="fas fa-id-badge"></i></h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																	</div>
+																	<div class="modal-body">
+																			<h3 class="lead">¿Seguro que deseas eliminar este cliente: <b>'{{customer.customer}}'</b>? </h3>
+																	</div>
+																	<div class="modal-footer">
+																			<form action="{% url 'delete_contact' customer.id %}" method="POST">
+																					{% csrf_token %}
+																					<button type="submit" class="btn btn-outline-danger" data-bs-target="#deleteContact{{ customer.id }}" data-bs-toggle="modal">Eliminar</button>
+																			</form>        
+																			<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+																	</div>
+															</div>
+												</div>
+                        <td>
+                            <li class="dropdown list-unstyled">
+                                <a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-bars justify-content-center"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown-menu">
+                                    <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#newCampaing{{customer.id}}"><i class="fas fa-mail-bulk"></i> Agregar campaña</a></li>
+                                    <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#updateCustomer{{customer.id}}"><i class="far fa-edit"></i> Actualizar</a></li>
+                                    <li><a class="dropdown-item" href="{% url "delete_contact" customer.id %}" data-bs-toggle="modal" data-bs-target="#deleteContact{{customer.id}}"><i class="fas fa-trash-alt"></i> Eliminar</a></li>
+                                </ul>
+                            </li>
+														<div class="modal fade justify-content-center" id="updateCustomer{{customer.id}}" tabindex="-1" role="dialog" aria-labelledby="updateCustomer" aria-hidden="true">
+															<div class="modal-dialog modal-dialog-scrollable" role="document">
+																	<div class="modal-content">
+																			<div class="modal-body">
+																					<h3 class="lead">Actualizar cliente: <b>'{{ customer.customer }}'</b> <i class="fas fa-address-book"></i></h3>
+																					<form action="{% url 'update_contact' customer.id %}" method="POST">
+																							{% csrf_token %}
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-sm mb-2" name="customer" type="text" id="customer" maxlength="20" required aria-required="Por favor ingrese el nombre del cliente.">
+																									<label class="form-label" for="taskName">Nombre del cliente</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-sm mb-2" name="address" type="text" id="address" maxlength="40">
+																									<label class="form-label" for="taskDescription">Dirección</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-sm mb-2" name="position" type="text" id="position" maxlength="20">
+																									<label class="form-label" for="taskDescription">Cargo</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="interaction" type="text" id="interaction" maxlength="20">
+																									<label class="form-label" for="taskStatus">Interacción</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="preference" type="text" id="preference" maxlength="25">
+																									<label class="form-label" for="taskStatus">Preferencia</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="notes" type="text" id="notes" maxlength="150">
+																									<label class="form-label" for="taskStatus">Notas</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="campaing" type="text" id="campaing" readonly value="Sin campaña">
+																									<label class="form-label" for="taskStatus">Campaña</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="email" type="email" id="email">
+																									<label class="form-label" for="taskStatus">Email</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<input class="form-control form-control-lg mb-2" name="phoneNumber" type="text" id="phoneNumber" maxlength="14">
+																									<label class="form-label" for="taskStatus">Teléfono</label>
+																							</div>
+																							<div class="form-floating py-3">
+																									<select class="form-select" aria-label="Default select example" name="status" id="status">
+																											<option selected></option>
+																											<option value="Activo">Activo</option>
+																											<option value="Inactivo">Inactivo</option>
+																									</select>
+																									<label for="priority" class="form-label">Estado</label>
+																							</div>
+											
+																							<button type="submit" class="btn btn-outline-primary">Actualizar Cliente</button>
+																					</form>
+																			</div>
+																			<div class="modal-footer">
+																					<button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+																			</div>
+																	</div>
+															</div>
+													</div>
+													<div class="modal fade" id="newCampaing{{ customer.id }}" tabindex="-1" role="dialog" aria-labelledby="newCampaing aria-hidden="true">
+														<div class="modal-dialog modal-dialog-scrollable">
+																<div class="modal-content">
+																		<div class="modal-header">
+																				<h5 class="modal-title" id="newCampaing{{ customer.id }}">Crear campaña de marketing <i class="fas fa-mail-bulk"></i></h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																		</div>
+																		<div class="modal-body">
+																			<img src="{% static 'images/logo_brand.png' %}" alt="logo_brand.png" width="450" height="100">
+																			<h3 class="lead mt-2" style="text-align:justify;">A través de las campañas de marketing llevamos a cabo una comunicación optima con nuestros clientes para promocionar nuestros productos y servicios por medio de los diferentes canales.</h3>
+																			<form action="{% url 'marketing_campaing' customer.id %}" method="POST">
+																				{% csrf_token %}
+																			<div class="form-floating py-3">
+																				<input class="form-control form-control-sm mb-2" name="emailSubject" type="text" id="emailSubject" maxlength="20" required>
+																				<label class="form-label" for="emailSubject">Asunto</label>
+																			</div>
+																			<div class="form-floating py-3">
+																				<select class="form-select" aria-label="Default select example" name="selectNewCampaing" id="selectNewCampaing">
+																						<option selected></option>
+																						<option value="Black_friday">Black friday</option>
+																						<option value="Servicios_digitales">Servicos digitales</option>
+																						<option value="Redes_sociales">Contacto a través de nuestras redes sociales</option>
+																						<option value="Temporada_navideña">Temporada navideña</option>
+																						<option value="Nuevo_cliente">Nuevo cliente</option>
+																				</select>
+																				<label for="priority" class="form-label">Tipos de campañas</label>
+																			</div>
+																			<div class="form-floating py-3">
+																				<input class="form-control form-control-sm mb-2" name="emailUser" type="email" id="emailUser" maxlength="20" readonly value="{{customer.email}}">
+																				<label class="form-label" for="emailUser">Correo del cliente</label>
+																			</div>
+																			<button type="submit" class="btn btn-outline-success" data-bs-target="#newCampaing{{ customer.id }}" data-bs-toggle="modal">Crear campaña</button>
+																		</form> 
+																		</div>
+																		<div class="modal-footer">
+																																								       
+																				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+																		</div>
+																</div>
+													</div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+		<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    {% block child_js_below_files %}
+			<script src="{% static 'js/table.js' %}"></script>
+			<script src="{% static 'js/dataTables.js' %}"></script>
+			<script src="{% static 'js/dataTables.bootstrap5.js' %}"></script>
+			<script src="{% static 'js/hide_message.js' %}"></script>
+        <script>
+            $('#myModal').on('shown.bs.modal', function () {
+                $('#myInput').trigger('focus')
+            });
+        </script>
+			
+    {% endblock %}
+	
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %} Marcas {% endblock %}
+
+{% block extra_styles %}
+    
+{% endblock %}
+
+{% block content %}
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'brands' %}"><span class="badge bg-secondary rounded-pill">Gestionar marcas</span></a></li>
+        </ul>
+    </nav>
+
+		<h3 class="lead text-center">Gestiona las marcas de los productos <i class="far fa-copyright"></i></h3>
+
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-success mt-4 alert-dismissible fade show text-center" role="alert" style="width: 350px;">
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					{{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
+
+		<button class="btn btn-outline-primary mt-5" data-bs-toggle="modal" data-bs-target="#addBrand"> Agregar marca</button>
+
+		<div class="modal fade justify-content-center" id="addBrand" tabindex="-1" role="dialog" aria-labelledby="addBrand" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+							<div class="modal-body">
+									<h3 class="lead">Agregar marca de un producto <i class="fas fa-plus-circle"></i></h3>
+									<form action="{% url 'add_brand' %}" method="POST">
+											{% csrf_token %}
+											<div class="form-floating py-3">
+													<input class="form-control form-control-sm mb-2" name="brandName" type="text" id="brandName">
+													<label class="form-label" for="brandName">Nombre de la marca</label>
+											</div>
+											<div class="form-floating py-3">
+													<select class="form-select" name="brandStatus" id="brandStatus">
+														<option value=""></option>
+														<option value="Activo">Activo</option>
+														<option value="Inactivo">Inactivo</option>
+													</select>
+													<label class="form-label" for="brandStatus">Estado</label>
+											</div>
+											<button type="submit" class="btn btn-outline-primary">Agregar</button>
+									</form>
+							</div>
+							<div class="modal-footer">
+									<button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+							</div>
+					</div>
+			</div>
+	</div>
+		<div class="table-responsive pt-4">
+			<table class="table table-hover table-bordered" style="width: 100%;">
+				<thead>
+					<tr>
+						<th>Nombre de la marca</th>
+						<th>Estado</th>
+						<th>Acción </th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for brand in brands %}
+						<tr>
+							<td>{{brand.name}}</td>
+							{% if brand.status == "Activo" %}
+									<td><span class="badge bg-success rounded-pill">{{brand.status}}</span></td>
+							{% else %}
+									<td><span class="badge bg-danger rounded-pill">{{brand.status}}</span></td>
+							{% endif %}
+
+							<div class="modal fade" id="deleteBrand{{ brand.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteBrand" aria-hidden="true">
+								<div class="modal-dialog">
+										<div class="modal-content">
+												<div class="modal-header">
+														<h5 class="modal-title" id="brandDelete">Eliminar marca <i class="fas fa-backspace"></i></h5>
+														<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+														<h3 class="lead">¿Seguro que deseas eliminar esta marca: <b>'{{brand.name}}'</b>? </h3>
+												</div>
+												<div class="modal-footer">
+														<form action="{% url 'delete_brand' brand.id %}" method="POST">
+																{% csrf_token %}
+																<button type="submit" class="btn btn-outline-danger" data-bs-target="#TaskDelete{{ task.id }}" data-bs-toggle="modal">Eliminar</button>
+														</form>        
+														<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+												</div>
+										</div>
+							</div>
+							<td> <li class="dropdown list-unstyled">
+								<a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="fas fa-bars justify-content-end"></i>
+								</a>
+								<ul class="dropdown-menu" aria-labelledby="Dropdown-menu">
+										<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#updateBrand{{ brand.id }}"><i class="far fa-edit"></i> Actualizar marca</a></li>
+										<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#deleteBrand{{ brand.id }}"><i class="fas fa-trash-alt"></i> Eliminar marca</a></li>
+								</ul>
+						</li></td>
+						<div class="modal fade justify-content-center" id="updateBrand{{ brand.id }}" tabindex="-1" role="dialog" aria-labelledby="updateBrand" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-scrollable" role="document">
+									<div class="modal-content">
+											<div class="modal-body">
+													<h3 class="lead">Actualizar marca:  <b>'{{ brand.name }}'</b> <i class="far fa-edit"></i></h3>
+													<form action="{% url 'update_brand' brand.id %}" method="POST">
+															{% csrf_token %}
+															<div class="form-floating py-3">
+																	<input class="form-control form-control-sm mb-2" name="brandName" type="text" id="brandName">
+																	<label class="form-label" for="brandName">Nombre de la marca</label>
+															</div>
+															<div class="form-floating py-3">
+																	<select class="form-select" name="brandStatus" id="brandStatus">
+																			<option value=""></option>
+																			<option value="Activo">Activo</option>
+																			<option value="Inactivo">Inactivo</option>
+																	</select>
+																	<label class="form-label" for="brandStatus">Estado</label>
+															</div>
+															<button type="submit" class="btn btn-outline-primary">Actualizar</button>
+											</div>
+											<div class="modal-footer">
+													<button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+											</div>
+											</form>
+									</div>
+							</div>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+{% endblock %}
+
+{% block child_js_below_files %}
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title%}Contáctanos{% endblock %}
+
+{% block extra_styles %}
+
+{% endblock %}
+
+{% block content%}
+<section class="bg-light py-3 py-md-5">
+    <div class="container">
+      <div class="row justify-content-md-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+            <h2 class="mb-4 display-5 text-center"><img src="{% static 'images/logo_brand.png' %}" alt="logo_brand.png" style="height: 110px; width: 600px;"></h2>
+          <p class="text-secondary mb-5 text-center">La mejor forma de contactarnos es llenando todos los campos de este formulario, por favor rellena todos los campos requeridos y nos pondremos en contacto contigo lo más pronto posible.</p>
+          <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+        </div>
+      </div>
+    </div>
+    <div class="container mb-8" style="width: 750px;">
+      <div class="row justify-content-lg-center">
+        <div class="col-12 col-lg-9">
+          <div class="bg-white border rounded shadow-sm overflow-hidden">
+  
+            <form action="{% url 'contact_us' %}" method="POST">
+                {% csrf_token %}
+              <div class="row gy-4 gy-xl-5 p-4 p-xl-5">
+                <div class="col-12">
+                    <label for="subject" class="form-label">Asunto</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="far fa-sticky-note"></i>
+                        </span>
+                        <input type="text" class="form-control" id="subject" name="subject" value="" required>
+                    </div> 
+                </div>
+                <div class="col-12">
+                  <label for="email" class="form-label">Email</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-at"></i>
+                    </span>
+                    <input type="email" class="form-control" id="email" name="email" value="" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label for="message" class="form-label">Mensaje</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="far fa-envelope"></i>
+                    </span>
+                    <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="d-grid">
+                    <button class="btn btn-outline-primary btn-lg" type="submit">Enviar</button><br>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mt-4 text-center">
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <h3 class="lead text-center">{{message}}</h3>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </form>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

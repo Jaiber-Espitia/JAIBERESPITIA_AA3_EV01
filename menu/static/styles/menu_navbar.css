@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+.nav-link {
+  color:#fcfcfc;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+
+.navbar {
+  margin: 0px;
+}
+
+
+.nav-pills .nav-link {
+  padding: 20px;
+}
+
+
+.nav-link:hover {
+  color: #dbd8e3;
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+
+.navbar {
+    padding-top: 0px;
+    position: inherit;
+    background-color:#ffffff;
+  
+}

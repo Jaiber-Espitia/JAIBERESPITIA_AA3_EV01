@@ -1,0 +1,125 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %} Generar nuevo ticket {% endblock %}
+
+{% block extra_styles %}
+    
+{% endblock %}
+
+{% block content %}
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+            <li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'tickets' %}">Gestor de tickets</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'generate_ticket' %}"><span class="badge bg-secondary rounded-pill">Nuevo ticket</span></a></li>
+        </ul>
+    </nav>
+    <h3 class="mb-5 text-center lead dispay-5">Formulario de creación de tickets <i class="fas fa-ticket-alt"></i></h3>
+		{% if messages %}
+			{% for message in messages %}
+					<div class="alert alert-success mt-4 alert-dismissible fade show text-center" role="alert" style="width: 350px;">
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						{{message}} <a class="text-decoration-none" href="{% url 'tickets' %}">Clic para ver.</a>
+					</div>
+			{% endfor %}
+		{% endif %}
+
+    <form action="{% url 'generate_ticket' %}" method="POST">
+			{% csrf_token %}
+			<div class="row">
+				<div class="col col col-sm-4 ">
+					<div class="form-group">
+							<label class="form-label" for="subject"> Asunto </label>
+							<input class="form-control g-3" type="text" id="subject" name="subject" required placeholder="Asunto">
+					</div>
+				</div>
+				<div class="col col col-sm-4 ">
+					<div class="form-group">
+						<label class="form-label" for="customer"> Nombre del cliente </label>
+						<select class="form-select" name="customer" id="customer">
+							<option value=""></option>
+							{% for customer in customers %}
+								<option value="{{customer.customer}}">{{customer.customer}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="col col-sm-4 mb-5">
+					<div class="form-group">
+						<label class="form-label" for="asigned"> Asignar a </label>
+						<select class="form-select" name="asigned" id="asigned">
+							<option value=""></option>
+							<option value="Departamento de sistemas">Departamento de sistemas</option>
+							<option value="Departamento de ventas">Departamento de ventas</option>
+							<option value="Departamento de ventas">Departamento de recursos humanos</option>
+							<option value="Soporte IT">Soporte IT</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="agent">Agente <i class="fas fa-headset"></i></label>
+							<input class="form-control" type="text" name="agent" id="agent" placeholder="Agente encargado">
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="priority">Prioridad </label>
+							<select class="form-select" name="priority" id="priority">
+								<option value=""></option>
+								<option value="Alta">Alta</option>
+								<option value="Mediana">Mediana</option>
+								<option value="Normal">Nomal</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row py-5">
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="description">Descripción </label>
+							<textarea class="form-control" name="description" id="description" cols="5" rows="5s"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="status">Estado <i class="far fa-check-circle"></i></label>
+							<input class="form-control" type="text" name="status" id="status" readonly value="Abierto">
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="ticketType">Tipo de ticket <i class="fas fa-ticket-alt"></i></label>
+							<select class="form-select" name="ticketType" id="ticketType">
+								<option value=""></option>
+								<option value="Consulta">Consulta</option>
+								<option value="Problema técnico">Problema técnico</option>
+								<option value="Problema factura">Problema de factura</option>
+								<option value="Cambio de contraseña">Cambio de contraseña</option>
+							</select>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label class="form-label" for="channel">Canal de comunicación </label>
+							<select class="form-select" name="channel" id="channel">
+								<option value=""></option>
+								<option value="Email">Email</option>
+								<option value="Chat de soporte">Chat de soporte</option>
+								<option value="Llamada">Llamada</option>
+								<option value="Chat en vivo">Chat en vivo</option>
+							</select>
+						</div>
+					</div>
+					<button class="btn btn-outline-success d-flex justify-content-center mt-5" type="submit">Crear ticket</button>
+				</div>
+			</div>
+		</form>
+    {% block child_js_below_files %} 
+        <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    {% endblock %}
+
+{% endblock %}

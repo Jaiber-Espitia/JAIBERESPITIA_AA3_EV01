@@ -1,0 +1,19 @@
+# Archivos generados por el sistema operativo
+.DS_Store
+
+# Directorios generados por Python
+__pycache__/
+*.pyc
+
+
+# Archivos de registro y datos temporales
+logs/
+*.log
+
+
+# Archivos de dependencias y entorno
+*.pyc
+*.pyo
+*.pyc
+*.pyo
+*.rdb

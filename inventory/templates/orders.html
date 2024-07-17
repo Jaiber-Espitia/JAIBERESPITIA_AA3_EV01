@@ -1,0 +1,204 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %} Pedidos {% endblock %}
+{% load multiply_price %}
+
+{% block extra_styles %}
+    
+{% endblock %}
+
+{% block content %}
+		<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+			<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a class="text-decoration-none link-primary" href="{% url 'dashboard' %}">Menú</a></li>
+					<li class="breadcrumb-item active" aria-current="page"><a href="{% url 'orders' %}"><span class="badge bg-secondary rounded-pill">Gestionar productos y pedidos</span></a></li>
+			</ul>
+		</nav>
+		<h3 class="lead text-center mb-4">Gestiona los productos y pedidos <i class="fas fa-box-open"></i></h3>
+		
+		{% if messages %}
+				{% for message in messages %}
+						<div class="alert alert-success alert-dismissible fade show text-center" role="alert" style="width: 350px;">
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							{{message}}
+						</div>
+				{% endfor %}
+		{% endif %}
+
+		<span class="badge bg-success">
+			Productos agregados
+		</span>
+		<div class="table-responsive mt-4">
+			<table class="table table-bordered table-hover" style="width: 100%;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Nombre</th>
+						<th>Precio</th>
+						<th>Cantidad</th>
+						<th>Descripción</th>
+						<th>Marca</th>
+						<th>Categoria</th>
+						<th>Tienda</th>
+						<th>Acción</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for product in products %}
+					<tr>
+						<td>{{product.id}}</td>
+						<td>{{product.name}}</td>
+						<td>{{product.price}}</td>
+						<td>{{product.quantity}}</td>
+						<td>{{product.description}}</td>
+						<td>{{product.brands}}</td>
+						<td>{{product.category}}</td>
+						<td>{{product.store}}</td>
+						<div id="addOrder{{product.id}}" class="modal">
+							<div class="modal-dialog modal-lg">
+									<div class="modal-content">
+											<div class="modal-header">
+													<h5 class="modal-title">Agregar pedido al producto: {{product.name}}</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											</div>
+											<div class="modal-body">
+												<form action="{% url 'add_order' %}" method="POST">
+													{% csrf_token %}
+													<div class="row">
+														<div class="col col col-sm-4 ">
+															<div class="form-group">
+																	<label class="form-label" for="productName"> Nombre del producto </label>
+																	<input class="form-control" type="text" name="productName" id="productName" readonly value="{{product.name}}">
+
+															</div>
+														</div>
+														<div class="col col col-sm-4 ">
+															<div class="form-group">
+																<label class="form-label" for="customer"> Nombre del cliente </label>
+																<select class="form-select" name="customer" id="customer">
+																	<option value=""></option>
+																	{% for customer in customers %}
+																		<option value="{{customer.customer}}">{{customer.customer}}</option>
+																	{% endfor %}
+																</select>
+															</div>
+														</div>
+														<div class="col col-sm-4 mb-5">
+															<div class="form-group">
+																<label class="form-label" for="price">Precio</label>
+																<input class="form-control" type="text" name="price" readonly value="{{product.price}}">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col">
+																<div class="form-group">
+																	<label class="form-label" for="address">Dirección </label>
+																	<input class="form-control" type="text" name="address" id="address" placeholder="Dirección">
+																</div>
+															</div>
+															<div class="col">
+																<div class="form-group">
+																	<label class="form-label" for="phone">Teléfono</label>
+																	<input class="form-control" type="text" name="phone" id="phone" placeholder="Teléfono">
+																</div>
+															</div>
+															<div class="col">
+																<div class="form-group">
+																	<label class="form-label" for="totalPrice">Precio total</label>
+																	<input class="form-control" type="text" name="totalPrice" id="totalPrice" placeholder="Precio total a pagar" readonly value="{{product.total_price}}">
+																</div>
+															</div>
+														</div>
+															<button class="btn btn-outline-success d-flex justify-content-center mt-5" type="submit">Agregar pedido</button>
+														</div>
+													</div>
+												</form>
+									</div>
+							</div>
+					</div>
+						<td>
+							<li class="dropdown list-unstyled">
+								<a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="fas fa-bars justify-content-center"></i>
+								</a>
+								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="Dropdown-menu">
+									<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#addOrder{{ product.id }}"> <i class="far fa-check-square"></i> Agregar pedido</a></li>
+								</ul>
+						</li>
+					</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+
+			<div class="responsive-table mt-5">
+				<span class="badge bg-success mb-4">
+					Pedidos agregados
+				</span>
+					<table class="table table-bordered table-hover" style="width: 100%;">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Cliente</th>
+								<th>Producto</th>
+								<th>Dirección</th>
+								<th>Teléfono</th>
+								<th>Precio total</th>
+								<th>Fecha</th>
+								<th>Empleado</th>
+								<th>Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for order in orders %}
+								<tr>
+									<td>{{order.id}}</td>
+									<td>{{order.customer}}</td>
+									<td>{{order.product}}</td>
+									<td>{{order.adress}}</td>
+									<td>{{order.phone}}</td>
+									<td>{{order.total_price}}</td>
+									<td>{{order.created_at}}</td>
+									<td>{{request.user}}</td>
+
+									<div class="modal fade" id="deleteOrder{{ order.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteOrder" aria-hidden="true">
+										<div class="modal-dialog">
+												<div class="modal-content">
+														<div class="modal-header">
+																<h5 class="modal-title" id="taskDelete">Eliminar pedido <i class="fas fa-backspace"></i></h5>
+																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+														</div>
+														<div class="modal-body">
+																<h3 class="lead">¿Seguro que deseas eliminar este pedido #: <b>'{{order.id}}'</b>? </h3>
+														</div>
+														<div class="modal-footer">
+																<form action="{% url 'delete_order' order.id %}" method="POST">
+																		{% csrf_token %}
+																		<button type="submit" class="btn btn-outline-danger" data-bs-target="#TaskDelete{{ task.id }}" data-bs-toggle="modal">Eliminar</button>
+																</form>        
+																<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+														</div>
+												</div>
+									</div>
+									<td>
+											<li class="dropdown list-unstyled">
+												<a class="text-decoration-none" id="Dropdown-menu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+													<i class="fas fa-bars justify-content-center"></i>
+												</a>
+												<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="Dropdown-menu">
+													<li><a class="dropdown-item" href="{% url 'generate_report' order.id %}"><i class="fas fa-print"></i> Generar reporte</a></li>
+													<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#updateOrder{{ product.id }}"><i class="far fa-edit"></i> Actualizar pedido</a></li>
+													<li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#deleteOrder{{ order.id }}"><i class="fas fa-trash-alt"></i> Eliminar pedido</a></li>
+												</ul>
+											</li>
+											
+									</td>
+								</tr>
+							{% endfor %}
+
+						</tbody>
+					</table>
+			</div>
+		</div>
+
+{% endblock %}
